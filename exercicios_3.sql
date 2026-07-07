@@ -106,13 +106,3 @@ ON t.idcliente = c.idcliente
 
 GROUP BY c.idcliente, tempo_de_criacao
 ORDER BY tempo_de_criacao DESC
-
-
--- 
-
-
-
-
-
-
-
