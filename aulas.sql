@@ -323,4 +323,5 @@ tb_clientes_dias AS (					-- Quantas vezes quem participou do primeiro dia volto
 SELECT ROUND(AVG(qtdias), 2) AS media_de_dias
 FROM tb_clientes_dias
 
--- teste
+
+-- 
