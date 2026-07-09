@@ -2,10 +2,10 @@
 -- CTEs (Common Table Expression)
 
 --Engajamento por dia
---SELECT DATE(dtcriacao) AS dtDia, COUNT(DISTINCT idcliente) AS qtdeclientes
---FROM transacoes
---WHERE dtcriacao >= '2025-08-25' AND dtcriacao < '2025-08-30'
---GROUP BY dtdia
+SELECT DATE(dtcriacao) AS dtDia, COUNT(DISTINCT idcliente) AS qtdeclientes
+FROM transacoes
+WHERE dtcriacao >= '2025-08-25' AND dtcriacao < '2025-08-30'
+GROUP BY dtdia
 
 
 -- Como foi a curva de Churn do Curso de SQL?
