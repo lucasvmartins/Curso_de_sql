@@ -324,4 +324,27 @@ SELECT ROUND(AVG(qtdias), 2) AS media_de_dias
 FROM tb_clientes_dias
 
 
--- 
+-- Qual o dia com maior engajamento de cada aluno que iniciou o curso no dia 1?
+WITH tb_alunos_dia1 AS (
+	SELECT DISTINCT idcliente
+	FROM transacoes
+	WHERE DATE(dtcriacao) = '2025-08-25' 
+),
+tb_cliente_engajamento AS (
+	SELECT ad1.idcliente AS cliente, DATE(t.dtcriacao) AS dia, COUNT(*) AS qtdeEngajamento
+	FROM tb_alunos_dia1 AS ad1
+	LEFT JOIN transacoes AS t
+	ON ad1.idcliente = t.idcliente
+	WHERE t.dtcriacao >= '2025-08-25' AND t.dtcriacao < '2025-08-30'
+	GROUP BY cliente, dia
+	ORDER BY cliente, dia
+),
+tb_join AS (
+	SELECT *,
+			ROW_NUMBER() OVER (PARTITION BY cliente ORDER BY qtdeengajamento DESC, dia) AS ordem_engajamento
+	FROM tb_cliente_engajamento
+)
+SELECT cliente, dia, qtdeengajamento
+FROM tb_join
+WHERE ordem_engajamento = 1
+
