@@ -324,6 +324,7 @@ SELECT ROUND(AVG(qtdias), 2) AS media_de_dias
 FROM tb_clientes_dias
 
 
+-- Enumerando Linhas (row_number)
 -- Qual o dia com maior engajamento de cada aluno que iniciou o curso no dia 1?
 WITH tb_alunos_dia1 AS (
 	SELECT DISTINCT idcliente
