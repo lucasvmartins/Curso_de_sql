@@ -459,8 +459,46 @@ FROM tb_soma_ponto_clientes
 
 -- UPDATE TABLE 
 
+-- Exemplo
+-- Excluímos os domingos da tabela
+DELETE FROM relatorio_diario
+WHERE EXTRACT(DOW FROM data_soma) = 0
+
+-- Não existem mais resultados na tabela de dias de domingo
+SELECT *
+FROM relatorio_diario AS rd
+WHERE DATE(rd.data_soma) = '2024-02-11'
+
+
+-- Como ficaria com o UPDATE
+UPDATE relatorio_diario
+SET soma_pontos = 1000
+WHERE data_soma >= '2025-08-25'
+
+SELECT *
+FROM relatorio_diario AS rd
+WHERE rd.data_soma >= '2025-08-20'
 
 
 
 
+-- CREATE do Zero
 
+-- Criando uma tabela de clientes do último mês
+DROP TABLE IF EXISTS cliente_365
+
+CREATE TABLE IF NOT EXISTS cliente_365(
+	idCliente Varchar(250) PRIMARY KEY,
+	qtDeTransacoes Integer
+)
+
+TRUNCATE TABLE cliente_365
+
+INSERT INTO cliente_365
+SELECT idcliente,
+		COUNT(DISTINCT idtransacao) AS qtdetransacao
+FROM transacoes
+WHERE current_date - date(dtcriacao) <= 365
+GROUP BY idcliente
+
+SELECT * FROM cliente_365
