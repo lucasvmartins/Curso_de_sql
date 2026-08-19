@@ -498,7 +498,7 @@ INSERT INTO cliente_365
 SELECT idcliente,
 		COUNT(DISTINCT idtransacao) AS qtdetransacao
 FROM transacoes
-WHERE current_date - date(dtcriacao) <= 365
+WHERE CURRENT_DATE - date(dtcriacao) <= 365
 GROUP BY idcliente
 
 SELECT * FROM cliente_365
