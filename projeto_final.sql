@@ -48,16 +48,31 @@ tb_sumario_transacoes AS (
 	FROM tb_transacoes
 	GROUP BY idcliente
 	ORDER BY qtdetransacoes DESC, transacoes365d
+),
+tb_sumario_join_clientes AS (
+	SELECT t1.*,
+			t2.temponabase
+	FROM tb_sumario_transacoes AS t1
+	LEFT JOIN tb_cliente AS t2
+	ON t1.idcliente = t2.idcliente
+),
+tb_transacao_produto AS (
+	SELECT t1.*,
+			p.descnomeproduto, p.desccategoriaproduto
+	FROM tb_transacoes AS t1
+	LEFT JOIN transacao_produto AS tp
+	ON t1.idtransacao = tp.idtransacao
+	LEFT JOIN produtos AS p
+	ON tp.idproduto = p.idproduto
 )
-SELECT t1.*,
-		t2.temponabase
-FROM tb_sumario_transacoes AS t1
-LEFT JOIN tb_cliente AS t2
-ON t1.idcliente = t2.idcliente
-
-
-
-
+SELECT idcliente, descnomeproduto,
+		COUNT(*) AS produtoMaisUsadoTotal,
+		COUNT(CASE WHEN diffdate <= 7 THEN idtransacao END) AS produtomaisusadod7,
+		COUNT(CASE WHEN diffdate <= 14 THEN idtransacao END) AS produtomaisusadod14,
+		COUNT(CASE WHEN diffdate <= 28 THEN idtransacao END) AS produtomaisusadod28,
+		COUNT(CASE WHEN diffdate <= 56 THEN idtransacao END) AS produtomaisusadod56
+FROM tb_transacao_produto 
+GROUP BY idcliente, descnomeproduto
 
 
 
