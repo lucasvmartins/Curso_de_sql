@@ -3,14 +3,14 @@
 /*
 Vamos construir uma tabela com o perfil comportamental dos nossos usuários
 
-1. Quantidade de transações históricas (Total, D7, D14, D28, D56)
-2. Dias desde a última transação
-3. Tempo na base
-4. Produto mais usado (Total, D7, D14, D28, D56)
-5. Saldo de pontos atual
-6. Pontos acumulados positivos (Total, D7, D14, D28, D56)
-7. Pontos acumulados negativos (Total, D7, D14, D28, D56)
-8. Dias da semana mais ativos (D28)
+1. Quantidade de transações históricas (Total, D7, D14, D28, D56) ✓
+2. Dias desde a última transação ✓
+3. Tempo na base ✓
+4. Produto mais usado (Total, D7, D14, D28, D56) ✓
+5. Saldo de pontos atual ✓
+6. Pontos acumulados positivos (Total, D7, D14, D28, D56) ✓
+7. Pontos acumulados negativos (Total, D7, D14, D28, D56) ✓
+8. Dias da semana mais ativos (D28) ✓
 9. Período do dia mais ativos (D28)
 10. Engajamento em D28 x Total
 */
@@ -90,6 +90,19 @@ tb_cliente_produto_rn AS (
 			ROW_NUMBER() OVER (PARTITION BY idcliente ORDER BY produtoMaisUsadod56 DESC) AS rnD56
 	FROM tb_cliente_produto 
 ),
+tb_cliente_dia AS (
+	SELECT idcliente,
+			EXTRACT(DOW FROM dtcriacao) AS dtDia,
+			COUNT(*) AS qtdeTransacoes
+	FROM tb_transacoes
+	WHERE diffdate <= 365
+	GROUP BY idcliente, dtDia
+),
+tb_cliente_dia_rn AS (
+	SELECT *,
+			ROW_NUMBER() OVER (PARTITION BY idcliente ORDER BY qtdeTransacoes DESC) AS rnDia
+	FROM tb_cliente_dia
+),
 tb_join AS (
 	SELECT t1.*,
 			t2.temponabase,
@@ -97,7 +110,8 @@ tb_join AS (
 			t4.descnomeproduto AS produtomaisusadod7,
 			t5.descnomeproduto AS produtomaisusadod14,
 			t6.descnomeproduto AS produtomaisusadod28,
-			t7.descnomeproduto AS produtomaisusadod56
+			t7.descnomeproduto AS produtomaisusadod56,
+			COALESCE(t8.dtDia, -1) AS dtDia
 	FROM tb_sumario_transacoes AS t1
 	LEFT JOIN tb_cliente AS t2
 	ON t1.idcliente = t2.idcliente
@@ -111,10 +125,14 @@ tb_join AS (
 	ON t1.idcliente = t6.idcliente AND t6.rnd28 = 1
 	LEFT JOIN tb_cliente_produto_rn AS t7
 	ON t1.idcliente = t7.idcliente AND t7.rnd56 = 1
+	LEFT JOIN tb_cliente_dia_rn AS t8
+	ON t1.idcliente = t8.idcliente AND t8.rnDia = 1
 )
 SELECT *
 FROM tb_join
-ORDER BY idcliente
+
+
+
 
 
 
