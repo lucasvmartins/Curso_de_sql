@@ -28,8 +28,11 @@ Vamos construir uma tabela com o perfil comportamental dos nossos usuários
 
 -- Versão melhorada (Mais otimizada)
 
+/*
+CREATE TABLE feature_store_cliente AS
 WITH tb_transacoes AS (
 	SELECT idcliente, idtransacao, qtdepontos,
+			EXTRACT(HOUR FROM dtcriacao) AS data_hora,
 			DATE(dtcriacao) AS dtcriacao,
 			DATE(CURRENT_DATE) - DATE(dtcriacao) AS diffdate
 	FROM transacoes
@@ -92,7 +95,15 @@ tb_cliente_produto_rn AS (
 ),
 tb_cliente_dia AS (
 	SELECT idcliente,
-			EXTRACT(DOW FROM dtcriacao) AS dtDia,
+			CASE EXTRACT(DOW FROM dtcriacao)
+				WHEN 0 THEN 'Domingo'
+				WHEN 1 THEN 'Segunda-feira'
+				WHEN 2 THEN 'Terça-feira'
+				WHEN 3 THEN 'Quarta-feira'
+				WHEN 4 THEN 'Quinta-feira'
+				WHEN 5 THEN 'Sexta-feira'
+				WHEN 6 THEN 'Sábado'
+			END AS dtDia,
 			COUNT(*) AS qtdeTransacoes
 	FROM tb_transacoes
 	WHERE diffdate <= 365
@@ -103,6 +114,23 @@ tb_cliente_dia_rn AS (
 			ROW_NUMBER() OVER (PARTITION BY idcliente ORDER BY qtdeTransacoes DESC) AS rnDia
 	FROM tb_cliente_dia
 ),
+tb_cliente_periodo AS (
+	SELECT idcliente,
+			CASE
+				WHEN data_hora BETWEEN 6 AND 11 THEN 'MANHÃ'
+				WHEN data_hora BETWEEN 12 AND 17 THEN 'TARDE'
+				WHEN data_hora BETWEEN 18 AND 23 THEN 'NOITE'
+				ELSE 'MADRUGADA'
+			END AS periodo,
+			COUNT(*) AS qtdeTransacao
+	FROM tb_transacoes
+	GROUP BY 1, 2
+),
+tb_cliente_periodo_rn AS (
+	SELECT *,
+			ROW_NUMBER() OVER (PARTITION BY idCliente ORDER BY qtdeTransacao DESC) AS rnPeriodo 
+	FROM tb_cliente_periodo
+),
 tb_join AS (
 	SELECT t1.*,
 			t2.temponabase,
@@ -111,7 +139,9 @@ tb_join AS (
 			t5.descnomeproduto AS produtomaisusadod14,
 			t6.descnomeproduto AS produtomaisusadod28,
 			t7.descnomeproduto AS produtomaisusadod56,
-			COALESCE(t8.dtDia, -1) AS dtDia
+			COALESCE(t8.dtDia, 'Sem Informação') AS dia_semana_mais_ativo,
+			t9.periodo AS periodo_mais_ativo,
+			1. * transacoes28d / t1.qtdetransacoes AS engaramento28DvsVida
 	FROM tb_sumario_transacoes AS t1
 	LEFT JOIN tb_cliente AS t2
 	ON t1.idcliente = t2.idcliente
@@ -127,17 +157,12 @@ tb_join AS (
 	ON t1.idcliente = t7.idcliente AND t7.rnd56 = 1
 	LEFT JOIN tb_cliente_dia_rn AS t8
 	ON t1.idcliente = t8.idcliente AND t8.rnDia = 1
+	LEFT JOIN tb_cliente_periodo_rn AS t9
+	ON t1.idcliente = t9.idcliente AND t9.rnPeriodo = 1
 )
 SELECT *
 FROM tb_join
+*/
 
-
-
-
-
-
-
-
-
-
-
+SELECT *
+FROM feature_store_cliente
