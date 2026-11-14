@@ -1,0 +1,60 @@
+-- public.clientes definição
+
+-- Drop table
+
+-- DROP TABLE public.clientes;
+
+CREATE TABLE public.clientes (
+	idcliente varchar(36) NULL,
+	flemail int4 NULL,
+	fltwitch int4 NULL,
+	flyoutube int4 NULL,
+	flbluesky int4 NULL,
+	flinstagram int4 NULL,
+	qtdepontos int4 NULL,
+	dtcriacao timestamp NULL,
+	dtatualizacao timestamp NULL
+);
+
+
+-- public.produtos definição
+
+-- Drop table
+
+-- DROP TABLE public.produtos;
+
+CREATE TABLE public.produtos (
+	idproduto varchar(36) NULL,
+	descnomeproduto varchar(255) NULL,
+	desccategoriaproduto varchar(100) NULL
+);
+
+
+-- public.transacao_produto definição
+
+-- Drop table
+
+-- DROP TABLE public.transacao_produto;
+
+CREATE TABLE public.transacao_produto (
+	idtransacaoproduto varchar(36) NULL,
+	idtransacao varchar(36) NULL,
+	idproduto varchar(36) NULL,
+	qtdeproduto int4 NULL,
+	vlproduto numeric NULL
+);
+
+
+-- public.transacoes definição
+
+-- Drop table
+
+-- DROP TABLE public.transacoes;
+
+CREATE TABLE public.transacoes (
+	idtransacao varchar(36) NULL,
+	idcliente varchar(36) NULL,
+	dtcriacao timestamp NULL,
+	qtdepontos int4 NULL,
+	descsistemaorigem varchar(100) NULL
+);
