@@ -170,7 +170,6 @@ COPY transacao_produto FROM '/tmp/transacao_produto.csv' DELIMITER ';' CSV HEADE
 | `transacoes` | Transações de pontos por cliente, com data, quantidade e sistema de origem |
 | `transacao_produto` | Relação entre transações e produtos, com quantidade e valor |
 
-
 ## Projeto final: perfil comportamental de clientes
 
 O projeto final constrói a tabela `feature_store_cliente`, com o perfil comportamental de cada cliente:
